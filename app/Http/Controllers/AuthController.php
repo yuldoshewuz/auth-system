@@ -103,6 +103,18 @@ class AuthController extends Controller
             return redirect()->route('auth.set-password');
         }
 
+        if (is_null($user->email_verified_at)) {
+            $user->update([
+                'email_verified_at' => now(),
+            ]);
+        }
+
+        if (is_null($user->{$provider . '_id'})) {
+            $user->update([
+                $provider . '_id' => $socialUser->getId()
+            ]);
+        }
+
         if (is_null($user->password)) {
             session(['pending_user_id' => $user->id]);
             return redirect()->route('auth.set-password');
