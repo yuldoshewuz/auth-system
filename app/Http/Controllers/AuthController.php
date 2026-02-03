@@ -88,32 +88,31 @@ class AuthController extends Controller
             return redirect()->route('login')->withErrors(['email' => 'Social login failed.']);
         }
 
-        $user = User::where('email', $socialUser->getEmail())->first();
+        $user = User::where($provider . '_id', $socialUser->getId())->first();
 
         if (!$user) {
-            $user = User::create([
-                'name' => $socialUser->getName(),
-                'email' => $socialUser->getEmail(),
-                $provider . '_id' => $socialUser->getId(),
-                'password' => null,
-                'email_verified_at' => now(),
-            ]);
+            $user = User::where('email', $socialUser->getEmail())->first();
 
-            session(['pending_user_id' => $user->id]);
-            return redirect()->route('auth.set-password');
+            if ($user) {
+                $user->update([
+                    $provider . '_id' => $socialUser->getId(),
+                    'email_verified_at' => $user->email_verified_at ?? now(),
+                ]);
+            } else {
+                $user = User::create([
+                    'name' => $socialUser->getName() ?? $socialUser->getNickname(),
+                    'email' => $socialUser->getEmail(),
+                    $provider . '_id' => $socialUser->getId(),
+                    'password' => null,
+                    'email_verified_at' => now(),
+                ]);
+            }
         }
 
-        if (is_null($user->email_verified_at)) {
-            $user->update([
-                'email_verified_at' => now(),
-            ]);
-        }
-
-        if (is_null($user->{$provider . '_id'})) {
-            $user->update([
-                $provider . '_id' => $socialUser->getId()
-            ]);
-        }
+        $user->update([
+            'email' => $socialUser->getEmail(),
+            'name' => $socialUser->getName() ?? $socialUser->getNickname(),
+        ]);
 
         if (is_null($user->password)) {
             session(['pending_user_id' => $user->id]);
