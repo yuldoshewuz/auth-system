@@ -114,39 +114,7 @@ class AuthController extends Controller
             'name' => $socialUser->getName() ?? $socialUser->getNickname(),
         ]);
 
-        if (is_null($user->password)) {
-            session(['pending_user_id' => $user->id]);
-            return redirect()->route('auth.set-password');
-        }
-
         Auth::login($user);
         return redirect()->route('dashboard');
-    }
-
-    public function showSetPassword()
-    {
-        if (!session()->has('pending_user_id')) {
-            return redirect()->route('login');
-        }
-        return view('auth.set-password');
-    }
-
-    public function storeSetPassword(Request $request)
-    {
-        $request->validate([
-            'password' => ['required', 'confirmed', Password::defaults()],
-        ]);
-
-        $userId = session('pending_user_id');
-        $user = User::findOrFail($userId);
-
-        $user->update([
-            'password' => Hash::make($request->password),
-        ]);
-
-        Auth::login($user);
-        session()->forget('pending_user_id');
-
-        return redirect()->route('dashboard')->with('status', 'Password set successfully! Welcome.');
     }
 }

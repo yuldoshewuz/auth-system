@@ -41,7 +41,7 @@ class ProfileController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'current_password' => ['nullable', 'required_with:password', 'current_password'],
+            'current_password' => ['nullable', 'current_password'],
             'password' => ['nullable', 'confirmed', Password::defaults()],
         ]);
 
@@ -62,11 +62,13 @@ class ProfileController extends Controller
 
     public function destroy(Request $request)
     {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
-
         $user = $request->user();
+
+        if ($user->password) {
+            $request->validate([
+                'password' => ['required', 'current_password'],
+            ]);
+        }
 
         Auth::logout();
 

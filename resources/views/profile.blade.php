@@ -178,7 +178,7 @@
                                             <div class="mt-4">
                                                 <input type="password" name="password"
                                                        class="block w-full rounded-xl border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6"
-                                                       placeholder="Password" required>
+                                                       placeholder="Password">
                                                 @error('password', 'userDeletion')
                                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                                 @enderror

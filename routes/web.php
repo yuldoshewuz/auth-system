@@ -20,11 +20,6 @@ Route::middleware('guest')->group(function () {
     Route::get('reset-password/{token}', [PasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('reset-password', [PasswordController::class, 'reset'])->name('password.update');
 
-    Route::get('auth/set-password', [AuthController::class, 'showSetPassword'])
-        ->name('auth.set-password');
-    Route::post('auth/set-password', [AuthController::class, 'storeSetPassword'])
-        ->name('auth.set-password.store');
-
     Route::get('auth/{provider}', [AuthController::class, 'redirectToProvider'])
         ->where('provider', 'google|github')
         ->name('social.redirect');
